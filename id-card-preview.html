@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ID Card Generator - Preview</title>
+    <style>
+        /* General styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background-color: white;
+            border-radius: 10px 10px 0 0;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            max-width: 100px;
+            height: auto;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            border: none;
+            transition: background-color 0.3s;
+        }
+        
+        .back-btn {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .back-btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .print-btn {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .print-btn:hover {
+            background-color: #27ae60;
+        }
+        
+        .card-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        /* Multiple Cards Layout */
+        .cards-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        /* ID Card Styles */
+        .id-card {
+            width: 360px;
+            height: 580px;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 15px;
+            page-break-inside: avoid;
+            margin-bottom: 10px;
+        }
+        
+        /* Header Styles */
+        .card-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .card-logo {
+            width: 60px;
+            height: auto;
+        }
+        
+        .header-center {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex: 1;
+            color: forestgreen;
+        }
+        
+        .college-heading {
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            flex: 1;
+            padding: 0 10px;
+        }
+        
+        .nabh-logo {
+            width: 60px;
+            height: auto;
+        }
+
+        .college-address {
+            width: 100%;
+            font-size: 12px;
+            font-weight: normal;
+            margin-top: 5px;
+            text-align: center;
+        }
+        
+        .role-indicator.teaching {
+            color: rgb(16, 206, 16); /* Keep the original green for teaching */
+        }
+
+        .role-indicator.non-teaching {
+            color: #3498db; /* Blue for non-teaching */
+        }
+
+        .role-indicator.hospital-staff {
+            color: darkgreen; /* Dark green for hospital staff */
+        }
+        
+        /* Divider */
+        .divider {
+            border: none;
+            height: 1px;
+            background-color: #ccc;
+            margin: 10px 0;
+        }
+        
+        /* Photo Section */
+        .photo-section {
+            display: flex;
+            justify-content: center;
+            margin: 15px 0;
+            position: relative;
+        }
+        
+        .photo-area {
+            width: 120px;
+            height: 150px;
+            overflow: hidden;
+            border: 1px solid #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .photo-area img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .role-indicator {
+            position: absolute;
+            left: 70px;
+            font-size: 10px;
+            writing-mode: vertical-lr;
+            text-orientation: mixed;
+            transform: rotate(180deg);
+            height: 150px;
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+            color: rgb(16, 206, 16);
+        }
+        
+        /* Details Section */
+        .details-section {
+            margin: 15px 0;
+        }
+        
+        .detail-row {
+            display: flex;
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
+        
+        .label {
+            width: 150px;
+            font-weight: bold;
+        }
+        
+        .colon {
+            margin: 0 5px;
+        }
+        
+        .value {
+            flex: 1;
+        }
+        
+        /* Footer - Updated for right-aligned, larger signature with reduced space */
+        .footer {
+            display: flex;
+            justify-content: flex-end; /* Right-align signature */
+            margin-top: 10px; /* Reduced from 20px */
+        }
+        
+        .signature-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .signature-img {
+            width: 100px;
+            height: auto;
+            filter: contrast(120%) brightness(105%);
+        }
+        
+        .signature-text {
+            font-size: 12px;
+            text-align: center;
+            margin-top: 5px;
+            font-weight: bold;
+        }
+        
+        @media print {
+            @page {
+                size: landscape;
+                margin: 0;
+            }
+            
+            body {
+                padding: 0;
+                background-color: white;
+            }
+            
+            .container {
+                max-width: none;
+                width: 100%;
+            }
+            
+            .header, .actions {
+                display: none;
+            }
+            
+            .card-container {
+                box-shadow: none;
+                padding: 10px;
+            }
+            
+            .cards-grid {
+                gap: 0;
+            }
+            
+            .id-card {
+                box-shadow: none;
+                break-inside: avoid;
+                margin: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="logo.png" alt="Company Logo" class="logo">
+            <div class="actions">
+                <button class="btn back-btn" onclick="goBack()">Back to Form</button>
+                <button class="btn print-btn" onclick="printCards()">Print ID Cards</button>
+            </div>
+        </div>
+        
+        <div class="card-container">
+            <div class="cards-grid" id="cardsGrid">
+                <!-- Cards will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Template for a single ID card
+        function createCardTemplate(employee) {
+            const dobDate = new Date(employee.dob);
+            const issuedDate = new Date(employee.issuedOn);
+            
+            // Define the role class
+            let roleClass = 'teaching';
+            if (employee.employeeType === "NON TEACHING") {
+                roleClass = 'non-teaching';
+            } else if (employee.employeeType === "HOSPITAL STAFF") {
+                roleClass = 'hospital-staff';
+            }
+
+            return `
+                <div class="id-card">
+                    <div class="card-header">
+                        <img src="logo.PNG" class="card-logo" alt="Logo" />
+                        <div class="header-center">
+                            <h1 class="college-heading">Shri Dhanwantry Ayurvedic College and Hospital</h1>
+                            <img src="nabh.png" class="nabh-logo" alt="NABH Logo" />
+                        </div>
+                        <h4 class="college-address">Sector 46B, Chandigarh PH NO:</h4>
+                        <h4 class="college-address">0172-5046200, 0172-5046000</h4>
+                    </div>
+
+                    <div class="photo-section">
+                        <div class="photo-area">
+                            <img src="${employee.photoSrc}" alt="Employee Photo">
+                        </div>
+                        <div class="role-indicator ${roleClass}">${employee.employeeType}</div>
+                    </div>
+
+                    <div class="details-section">
+                        <div class="detail-row">
+                            <span class="label">Name</span>
+                            <span class="colon">:</span>
+                            <span class="value">${employee.name}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Department</span>
+                            <span class="colon">:</span>
+                            <span class="value">${employee.department}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Employee Code</span>
+                            <span class="colon">:</span>
+                            <span class="value">${employee.employeeCode}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Designation</span>
+                            <span class="colon">:</span>
+                            <span class="value">${employee.designation}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Date Of Birth</span>
+                            <span class="colon">:</span>
+                            <span class="value">${formatDate(dobDate)}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Blood Group</span>
+                            <span class="colon">:</span>
+                            <span class="value">${employee.bloodGroup}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Issued On</span>
+                            <span class="colon">:</span>
+                            <span class="value">${formatDate(issuedDate)}</span>
+                        </div>
+                    </div>
+
+                    <div class="footer">
+                        <div class="signature-container">
+                            <img src="footersign.png.jpeg" class="signature-img" alt="Signature Image" />
+                            <div class="signature-text">Sanctioning Authority Sign</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Format date as DD-MM-YYYY
+        function formatDate(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}-${month}-${year}`;
+        }
+        
+        // Load data from localStorage and create cards
+        window.addEventListener('DOMContentLoaded', function() {
+            const savedEmployees = localStorage.getItem('idCardEmployees');
+            
+            if (!savedEmployees || JSON.parse(savedEmployees).length === 0) {
+                alert('No employee data found. Please add employees first.');
+                window.location.href = 'data-entry.html';
+                return;
+            }
+            
+            const employees = JSON.parse(savedEmployees);
+            const cardsGrid = document.getElementById('cardsGrid');
+            
+            // Create a card for each employee
+            employees.forEach(employee => {
+                const cardHTML = createCardTemplate(employee);
+                cardsGrid.innerHTML += cardHTML;
+            });
+        });
+        
+        // Go back to form
+        function goBack() {
+            window.location.href = 'data-entry.html';
+        }
+        
+        // Print ID cards
+        function printCards() {
+            window.print();
+        }
+    </script>
+</body>
+</html>
